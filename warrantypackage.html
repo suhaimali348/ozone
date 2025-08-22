@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warranty Packages - OZON DETAILING</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="images/transport.png">
+    <style>
+        /* YOUR ORIGINAL CSS - NO CHANGES */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; color: #333; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: #2c3e50; color: white; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        header h1 a { color: white; text-decoration: none; font-size: 1.8rem; }
+        nav ul { list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 0.5rem; }
+        nav ul li a { color: white; text-decoration: none; font-size: 1rem; padding: 0.5rem 1rem; border-radius: 4px; transition: background-color 0.3s; }
+        nav ul li a:hover { background-color: #34495e; }
+        nav ul li a.active { background-color: #3498db; }
+        #logout-link { color: #e74c3c; }
+        #logout-link:hover { background-color: #c0392b; }
+        main { flex: 1; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .form-container, .table-container { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; }
+        h2#form-title { font-size: 2rem; margin-bottom: 1rem; color: #2c3e50; }
+        #edit-mode-indicator.hidden { display: none; }
+        #edit-mode-indicator { background-color: #fef3c7; color: #92400e; padding: 0.75rem; border-radius: 4px; margin-bottom: 1.5rem; text-align: center; }
+        .message { padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; }
+        .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        form#warranty-form { display: flex; flex-direction: column; gap: 1rem; }
+        .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 200px; margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #2c3e50; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+        .button { display: inline-block; padding: 0.5rem 1rem; color: white; text-decoration: none; border: none; border-radius: 4px; cursor: pointer; }
+        .button-secondary { background-color: #7f8c8d; }
+        .button-danger { background-color: #e74c3c; }
+        .button-success { background-color: #28a745; }
+        .button-small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+        .final-actions { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }
+        .search-sort { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem; border: 1px solid #ddd; text-align: left; font-size: 0.9rem; }
+        th { background-color: #3498db; color: white; }
+        tr:hover { background-color: #f1f3f5; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 8px; padding: 1.5rem; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1.2rem; cursor: pointer; }
+        footer { text-align: center; padding: 1rem; background-color: #2c3e50; color: white; margin-top: auto; }
+        @media (max-width: 768px) {
+            header, nav ul, .form-row, .search-sort { flex-direction: column; align-items: flex-start; }
+            .final-actions { flex-direction: column; }
+            .final-actions button { width: 100%; }
+            table { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="dashboard.html">OZON DETAILING</a></h1>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="billing.html">Billing</a></li>
+                <li><a href="stock.html">Stock</a></li>
+                <li><a href="salary.html">Salaries</a></li>
+                <li><a href="expenses.html">Expenses</a></li>
+                <li><a href="view_bills.html">View Bills</a></li>
+                <li><a href="warrantypackage.html" class="active">Warranty Packages</a></li>
+                <li><a href="login.html" id="logout-link">Logout (<span id="logged-in-user"></span>)</a></li>
+               <li><a href="productwarranty.html" class="active">productwarranty.html</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="form-container">
+            <h2 id="form-title">Add Warranty Package</h2>
+            <div id="edit-mode-indicator" class="hidden">EDITING WARRANTY PACKAGE</div>
+            <div id="message-area"></div>
+            <form id="warranty-form">
+                <input type="hidden" id="editing-package-id">
+                <div class="form-row">
+                    <div class="form-group"><label>Package Name *:</label><input type="text" id="package_name" required></div>
+                    <div class="form-group"><label>Duration (Months) *:</label><input type="number" id="duration" min="1" required></div>
+                    <div class="form-group"><label>Cost (₹) *:</label><input type="number" id="cost" step="0.01" min="0" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Allowed Visits *:</label><input type="number" id="allowed_visits" min="1" value="24" required></div>
+                    <div class="form-group"><label>Customer Name *:</label><input type="text" id="customer_name" required></div>
+                    <div class="form-group"><label>Mobile Number:</label><input type="tel" id="customer_mobile"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="car_name">Car Name / Model *:</label><select id="car_name" required><option value="" disabled selected>Select</option><option value="Toyota Corolla">Toyota Corolla</option><option value="Honda Civic">Honda Civic</option><option value="Maruti Swift">Maruti Swift</option><option value="Hyundai Creta">Hyundai Creta</option><option value="Tata Nexon">Tata Nexon</option><option value="Other">Other</option></select></div>
+                    <div class="form-group" id="other-car-name-group" style="display: none;"><label for="other_car_name">Other Car Name *:</label><input type="text" id="other_car_name"></div>
+                    <div class="form-group"><label for="number_plate">Number Plate *:</label><input type="text" id="number_plate" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Issue Date *:</label><input type="date" id="issue_date" required></div>
+                    <div class="form-group"><label>Last Issue Date:</label><input type="date" id="last_issue_date"></div>
+                </div>
+                <div class="form-group"><label>Package Details / Notes:</label><textarea id="details"></textarea></div>
+                <div class="final-actions">
+                    <button type="submit" id="save-package-btn" class="button"><i class="fas fa-save"></i> Save Package</button>
+                    <button type="button" id="cancel-edit-btn" class="button button-danger hidden"><i class="fas fa-times"></i> Cancel Edit</button>
+                    <button type="reset" class="button button-secondary"><i class="fas fa-times"></i> Clear Form</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2>Warranty Packages</h2>
+            <div class="search-sort">
+                <div class="form-group"><label>Search:</label><input type="text" id="search" placeholder="Search..."></div>
+                <div class="form-group"><label>Sort By:</label><select id="sort"><option value="issue_date_desc">Newest First</option><option value="issue_date_asc">Oldest First</option><option value="customer_name">Customer Name</option></select></div>
+            </div>
+            <table>
+                <thead><tr><th>Package</th><th>Customer</th><th>Vehicle</th><th>Plate</th><th>Issue Date</th><th>Visits</th><th>Actions</th></tr></thead>
+                <tbody id="warranty-table-body"></tbody>
+            </table>
+        </div>
+
+        <div id="warranty-details-modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal('warranty-details-modal')">&times;</span>
+                <h3>Warranty Details</h3>
+                <div id="modal-details-content"></div>
+                <div class="modal-actions">
+                    <button type="button" id="modal-record-visit-btn" class="button button-success"><i class="fas fa-plus"></i> Record Visit</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="record-visit-modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal('record-visit-modal')">&times;</span>
+                <h3>Record Visit</h3>
+                <form id="record-visit-form">
+                    <input type="hidden" id="visit-package-id">
+                    <div class="form-group"><label>Visit Date *:</label><input type="date" id="visit_date" required></div>
+                    <div class="form-group"><label>Visit Details:</label><textarea id="visit_details"></textarea></div>
+                    <div class="modal-actions"><button type="submit" class="button button-success">Save Visit</button></div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer><p>© 2025 OZON DETAILING</p></footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+    <script>
+        // ✅ CORRECT FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZDRip0dEEFPC4h_FjG9_tJiZNcbK0fMo",
+            authDomain: "cms-66a2b.firebaseapp.com",
+            projectId: "cms-66a2b",
+            databaseURL: "https://cms-66a2b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            storageBucket: "cms-66a2b.appspot.com",
+            messagingSenderId: "628054355189",
+            appId: "1:628054355189:web:4a977980fac4a1959829bc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const warrantiesRef = database.ref('warranties');
+
+        let allWarranties = []; // Local cache
+
+        function showMessage(type, message, areaId = 'message-area') {
+            const area = document.getElementById(areaId);
+            if(area) area.innerHTML = `<div class="message message-${type}">${message}</div>`;
+        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('logged-in-user').textContent = localStorage.getItem('workshop_currentUser') || 'admin';
+            const warrantyForm = document.getElementById('warranty-form');
+            const recordVisitForm = document.getElementById('record-visit-form');
+            const warrantyTableBody = document.getElementById('warranty-table-body');
+            const searchInput = document.getElementById('search');
+            const sortSelect = document.getElementById('sort');
+            const carNameSelect = document.getElementById('car_name');
+            const otherCarNameGroup = document.getElementById('other-car-name-group');
+
+            warrantiesRef.on('value', snapshot => {
+                const data = snapshot.val() || {};
+                allWarranties = Object.entries(data).map(([id, val]) => ({ packageId: id, ...val }));
+                handleSearchAndSort();
+            });
+
+            function handleSearchAndSort() {
+                let filtered = [...allWarranties];
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    filtered = allWarranties.filter(w => 
+                        Object.values(w).some(val => String(val).toLowerCase().includes(searchTerm))
+                    );
+                }
+                filtered.sort((a, b) => {
+                    if (sortSelect.value === 'issue_date_asc') return new Date(a.issueDate) - new Date(b.issueDate);
+                    if (sortSelect.value === 'customer_name') return a.customerName.localeCompare(b.customerName);
+                    return new Date(b.issueDate) - new Date(a.issueDate);
+                });
+                displayWarranties(filtered);
+            }
+
+            function displayWarranties(warranties) {
+                warrantyTableBody.innerHTML = '';
+                if (warranties.length === 0) {
+                    warrantyTableBody.innerHTML = '<tr><td colspan="10" style="text-align: center;">No packages found.</td></tr>';
+                    return;
+                }
+                warranties.forEach(w => {
+                    const visitsUsed = w.visitHistory ? Object.keys(w.visitHistory).length : 0;
+                    const row = warrantyTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${w.packageName}</td><td>${w.customerName}</td><td>${w.carName}</td>
+                        <td>${w.numberPlate}</td><td>${new Date(w.issueDate).toLocaleDateString('en-IN')}</td>
+                        <td>${w.lastIssueDate ? new Date(w.lastIssueDate).toLocaleDateString('en-IN') : 'N/A'}</td>
+                        <td>${w.duration}</td><td>${visitsUsed}/${w.allowedVisits}</td>
+                        <td>${parseFloat(w.cost).toFixed(2)}</td>
+                        <td>
+                            <button class="button button-small" onclick="viewDetails('${w.packageId}')"><i class="fas fa-eye"></i></button>
+                            <button class="button button-secondary button-small" onclick="editWarranty('${w.packageId}')"><i class="fas fa-edit"></i></button>
+                            <button class="button button-danger button-small" onclick="deleteWarranty('${w.packageId}')"><i class="fas fa-trash"></i></button>
+                        </td>`;
+                });
+            }
+            
+            searchInput.addEventListener('input', handleSearchAndSort);
+            sortSelect.addEventListener('change', handleSearchAndSort);
+            carNameSelect.addEventListener('change', () => {
+                otherCarNameGroup.style.display = carNameSelect.value === 'Other' ? 'block' : 'none';
+            });
+
+            warrantyForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const editingId = document.getElementById('editing-package-id').value;
+                const packageId = editingId || warrantiesRef.push().key;
+
+                const carName = carNameSelect.value === 'Other' 
+                    ? document.getElementById('other_car_name').value 
+                    : carNameSelect.value;
+
+                const warrantyData = {
+                    packageName: document.getElementById('package_name').value,
+                    duration: parseInt(document.getElementById('duration').value),
+                    cost: parseFloat(document.getElementById('cost').value),
+                    allowedVisits: parseInt(document.getElementById('allowed_visits').value),
+                    customerName: document.getElementById('customer_name').value,
+                    customerMobile: document.getElementById('customer_mobile').value,
+                    carName: carName,
+                    numberPlate: document.getElementById('number_plate').value.toUpperCase(),
+                    issueDate: document.getElementById('issue_date').value,
+                    lastIssueDate: document.getElementById('last_issue_date').value || null,
+                    details: document.getElementById('details').value,
+                    updatedAt: new Date().toISOString()
+                };
+
+                if (!editingId) warrantyData.createdAt = new Date().toISOString();
+                
+                const existingWarranty = allWarranties.find(w => w.packageId === editingId);
+                if (existingWarranty && existingWarranty.visitHistory) {
+                    warrantyData.visitHistory = existingWarranty.visitHistory;
+                }
+
+                warrantiesRef.child(packageId).update(warrantyData).then(() => {
+                    showMessage('success', `Package ${editingId ? 'updated' : 'saved'} successfully!`);
+                    cancelEditMode();
+                });
+            });
+            
+            recordVisitForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const packageId = document.getElementById('visit-package-id').value;
+                const visitData = {
+                    date: document.getElementById('visit_date').value,
+                    details: document.getElementById('visit_details').value
+                };
+                warrantiesRef.child(packageId).child('visitHistory').push(visitData).then(() => {
+                    closeModal('record-visit-modal');
+                    showMessage('success', 'Visit recorded!');
+                });
+            });
+
+            document.getElementById('cancel-edit-btn').onclick = cancelEditMode;
+            warrantyForm.addEventListener('reset', () => setTimeout(cancelEditMode, 0));
+            
+            function cancelEditMode() {
+                document.getElementById('editing-package-id').value = '';
+                document.getElementById('form-title').textContent = 'Add Warranty Package';
+                document.getElementById('edit-mode-indicator').classList.add('hidden');
+                document.getElementById('save-package-btn').innerHTML = '<i class="fas fa-save"></i> Save Package';
+                document.getElementById('cancel-edit-btn').classList.add('hidden');
+                warrantyForm.reset();
+                document.getElementById('issue_date').valueAsDate = new Date();
+                document.getElementById('allowed_visits').value = 24;
+                otherCarNameGroup.style.display = 'none';
+            }
+
+            window.viewDetails = (packageId) => {
+                const w = allWarranties.find(p => p.packageId === packageId);
+                if(!w) return;
+                const visitsUsed = w.visitHistory ? Object.keys(w.visitHistory).length : 0;
+                const issueDate = new Date(w.issueDate);
+                const expiryDate = new Date(new Date(w.issueDate).setMonth(issueDate.getMonth() + parseInt(w.duration)));
+                
+                document.getElementById('modal-package-id').textContent = w.packageId;
+                document.getElementById('modal-package-name').textContent = w.packageName;
+                document.getElementById('modal-duration').textContent = w.duration;
+                document.getElementById('modal-allowed-visits').textContent = w.allowedVisits;
+                document.getElementById('modal-visits-used').textContent = visitsUsed;
+                document.getElementById('modal-visits-remaining').textContent = w.allowedVisits - visitsUsed;
+                document.getElementById('modal-cost').textContent = parseFloat(w.cost).toFixed(2);
+                document.getElementById('modal-customer-name').textContent = w.customerName;
+                document.getElementById('modal-customer-mobile').textContent = w.customerMobile || 'N/A';
+                document.getElementById('modal-car-name').textContent = w.carName;
+                document.getElementById('modal-number-plate').textContent = w.numberPlate;
+                document.getElementById('modal-issue-date').textContent = new Date(w.issueDate).toLocaleDateString('en-IN');
+                document.getElementById('modal-last-issue-date').textContent = w.lastIssueDate ? new Date(w.lastIssueDate).toLocaleDateString('en-IN') : 'N/A';
+                document.getElementById('modal-expiry-date').textContent = expiryDate.toLocaleDateString('en-IN');
+                document.getElementById('modal-details').textContent = w.details || 'None';
+                
+                const visitList = document.getElementById('modal-visit-history');
+                visitList.innerHTML = '';
+                if(w.visitHistory) {
+                    Object.values(w.visitHistory).forEach(v => {
+                        visitList.innerHTML += `<li>${new Date(v.date).toLocaleDateString('en-IN')} - ${v.details || 'No details'}</li>`;
+                    });
+                } else {
+                    visitList.innerHTML = '<li>No visits recorded.</li>';
+                }
+
+                const recordBtn = document.getElementById('modal-record-visit-btn');
+                recordBtn.onclick = () => {
+                    document.getElementById('visit-package-id').value = packageId;
+                    document.getElementById('visit_date').valueAsDate = new Date();
+                    closeModal('warranty-details-modal');
+                    openModal('record-visit-modal');
+                };
+                recordBtn.disabled = visitsUsed >= w.allowedVisits;
+                
+                openModal('warranty-details-modal');
+            };
+
+            window.editWarranty = (packageId) => {
+                const w = allWarranties.find(p => p.packageId === packageId);
+                if(w){
+                    document.getElementById('editing-package-id').value = w.packageId;
+                    document.getElementById('form-title').textContent = 'Edit Warranty Package';
+                    document.getElementById('edit-mode-indicator').classList.remove('hidden');
+                    document.getElementById('save-package-btn').innerHTML = '<i class="fas fa-save"></i> Update Package';
+                    document.getElementById('cancel-edit-btn').classList.remove('hidden');
+                    
+                    document.getElementById('package_name').value = w.packageName;
+                    document.getElementById('duration').value = w.duration;
+                    document.getElementById('cost').value = w.cost;
+                    document.getElementById('allowed_visits').value = w.allowedVisits;
+                    document.getElementById('customer_name').value = w.customerName;
+                    document.getElementById('customer_mobile').value = w.customerMobile;
+                    
+                    const carOptionExists = Array.from(carNameSelect.options).some(opt => opt.value === w.carName);
+                    if (carOptionExists) {
+                        carNameSelect.value = w.carName;
+                    } else {
+                        carNameSelect.value = 'Other';
+                        document.getElementById('other_car_name').value = w.carName;
+                    }
+                    carNameSelect.dispatchEvent(new Event('change'));
+
+                    document.getElementById('number_plate').value = w.numberPlate;
+                    document.getElementById('issue_date').value = w.issueDate;
+                    document.getElementById('last_issue_date').value = w.lastIssueDate;
+                    document.getElementById('details').value = w.details;
+                    
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+            
+            window.deleteWarranty = (packageId) => {
+                if (confirm('Are you sure you want to delete this warranty package?')) {
+                    warrantiesRef.child(packageId).remove().then(() => showMessage('success', 'Package deleted.'));
+                }
+            };
+            
+            cancelEditMode(); // Initial setup
+        });
+    </script>
+</body>
+</html>

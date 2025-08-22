@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OZON DETAILING</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="images/transport.png">
+    <style>
+        /* YOUR ORIGINAL CSS - WITH RESPONSIVE NAV ADDED */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; color: #333; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: #2c3e50; color: white; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        header h1 a { color: white; text-decoration: none; font-size: 1.8rem; }
+        .menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        nav { width: 100%; }
+        nav ul { list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        nav ul li a { color: white; text-decoration: none; font-size: 1rem; padding: 0.5rem 1rem; border-radius: 4px; transition: background-color 0.3s; }
+        nav ul li a:hover { background-color: #34495e; }
+        nav ul li a i { margin-right: 0.3rem; }
+        main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 2rem 1rem; }
+        .form-container { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 450px; width: 100%; animation: fadeIn 1s ease-in; }
+        .form-container h2 { font-size: 2rem; margin-bottom: 1.5rem; color: #2c3e50; text-align: center; }
+        .message { padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 1rem; }
+        .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        form { display: flex; flex-direction: column; gap: 1rem; }
+        .form-group { position: relative; margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #2c3e50; }
+        .form-group input { width: 100%; padding: 0.5rem 0.5rem 0.5rem 2.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+        .form-group i { position: absolute; left: 0.75rem; top: 2.2rem; color: #7f8c8d; }
+        button { display: inline-block; padding: 0.75rem; background-color: #3498db; color: white; text-decoration: none; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; transition: background-color 0.3s; }
+        button:hover { background-color: #2980b9; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        footer { text-align: center; padding: 1rem; background-color: #2c3e50; color: white; margin-top: auto; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+            header { padding: 1rem; }
+            header h1 { width: 100%; text-align: center; margin-bottom: 1rem; }
+            .menu-toggle { display: block; position: absolute; top: 1.25rem; right: 1rem; }
+            nav { width: 100%; }
+            nav ul { display: none; flex-direction: column; align-items: stretch; width: 100%; gap: 0; }
+            nav ul.nav-active { display: flex; }
+            nav ul li { width: 100%; }
+            nav ul li a { display: block; text-align: center; padding: 1rem; border-radius: 0; border-top: 1px solid #34495e;}
+            main { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="index.html"><i class="fas fa-car"></i> OZON DETAILING</a></h1>
+        <!-- Navigation with Back Button Added -->
+        <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
+        <nav id="main-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Back to Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <h2>Enter Access Code</h2>
+            <div id="message-area"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" required autofocus>
+                </div>
+                <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 OZON DETAILING</p>
+    </footer>
+
+    <script>
+        function showMessage(type, message) {
+            const area = document.getElementById('message-area');
+            if (area) area.innerHTML = `<div class="message message-${type}">${message}</div>`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Responsive menu toggle
+            document.getElementById('menu-toggle').onclick = () => document.querySelector('#main-nav ul').classList.toggle('nav-active');
+            
+            // Clear any previous session on page load
+            localStorage.removeItem('workshop_currentUser');
+
+            const loginForm = document.getElementById('login-form');
+            const submitButton = loginForm.querySelector('button[type="submit"]');
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const password = document.getElementById('password').value;
+
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+
+                // Simple hardcoded check for the password
+                if (password === '123456') {
+                    // Success
+                    localStorage.setItem('workshop_currentUser', 'admin'); 
+                    showMessage('success', 'Access granted! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    // Failure
+                    showMessage('error', 'Invalid password.');
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

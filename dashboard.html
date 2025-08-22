@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - OZON DETAILING</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="images/transport.png">
+    <style>
+        /* YOUR ORIGINAL CSS - NO CHANGES */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; color: #333; line-height: 1.6; }
+        header { background-color: #2c3e50; color: white; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        header h1 a { color: white; text-decoration: none; font-size: 1.8rem; }
+        nav ul { list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 0.5rem; }
+        nav ul li a { color: white; text-decoration: none; font-size: 1rem; padding: 0.5rem 1rem; border-radius: 4px; transition: background-color 0.3s; }
+        nav ul li a:hover { background-color: #34495e; }
+        nav ul li a.active { background-color: #3498db; }
+        #logout-link { color: #e74c3c; }
+        #logout-link:hover { background-color: #c0392b; }
+        main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        main h2 { font-size: 2rem; margin-bottom: 1rem; color: #2c3e50; }
+        main p { font-size: 1.1rem; margin-bottom: 2rem; }
+        .message { padding: 1rem; border-radius: 4px; margin-bottom: 0.5rem; font-size: 1rem; }
+        .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .card { background-color: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.3s, box-shadow 0.3s; text-align: center; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); }
+        .card i { font-size: 2rem; color: #3498db; margin-bottom: 1rem; }
+        .card h3 { font-size: 1.4rem; margin-bottom: 0.5rem; color: #2c3e50; }
+        .card p { font-size: 0.9rem; color: #666; margin-bottom: 1rem; }
+        /* Added class for live stats */
+        .card .stat { font-size: 1.8rem; font-weight: bold; color: #3498db; margin-bottom: 1rem; }
+        .button { display: inline-block; padding: 0.75rem 1.5rem; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-size: 1rem; transition: background-color 0.3s; }
+        .button:hover { background-color: #2980b9; }
+        .button-secondary { background-color: #7f8c8d; }
+        .info-section { margin-bottom: 2rem; }
+        .info-section h3 { font-size: 1.6rem; color: #2c3e50; margin-bottom: 1rem; }
+        .backup-warning { background-color: #fff3cd; color: #856404; padding: 1rem; border: 1px solid #ffeeba; border-radius: 4px; margin-bottom: 2rem; text-align: center; }
+        .backup-warning a { color: #007bff; }
+        footer { text-align: center; padding: 1rem; background-color: #2c3e50; color: white; margin-top: 2rem; }
+        @media (max-width: 768px) {
+            header, nav ul { flex-direction: column; align-items: flex-start; }
+            main { margin: 1rem; }
+            .dashboard-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="dashboard.html">OZON DETAILING</a></h1>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="billing.html">Billing</a></li>
+                <li><a href="stock.html">Stock</a></li>
+                <li><a href="salary.html">Salaries</a></li>
+                <li><a href="expenses.html">Expenses</a></li>
+                <li><a href="view_bills.html">View Bills</a></li>
+                <li><a href="login.html" id="logout-link">Logout (<span id="logged-in-user"></span>)</a></li>
+                <li><a href="productwarranty.html">productwarranty</a></li>
+                 <li><a href="warrantypackage.html">warrantypackage</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Dashboard</h2>
+        <p>Welcome back, <strong id="welcome-user-name">User</strong>! Here is a real-time summary of your workshop.</p>
+        <div id="message-area"></div>
+        <div class="backup-warning">
+            <p>For support, contact Suhaim Soft at <a href="tel:+918891479505">8891479505</a> or <a href="tel:+917736708566">7736708566</a>.</p>
+        </div>
+        
+        <div class="dashboard-cards">
+            <div class="card">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <h3>Total Bills</h3>
+                <p class="stat" id="total-bills-stat">0</p>
+                <a href="billing.html" class="button">Create New Bill</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-warehouse"></i>
+                <h3>Stock Items</h3>
+                <p class="stat" id="stock-items-stat">0</p>
+                <a href="stock.html" class="button">Manage Stock</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-money-check-alt"></i>
+                <h3>Total Expenses</h3>
+                <p class="stat" id="total-expenses-stat">₹0.00</p>
+                <a href="expenses.html" class="button">Track Expenses</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-list-alt"></i>
+                <h3>View All Bills</h3>
+                <p>See a detailed list of all generated invoices.</p>
+                <a href="view_bills.html" class="button button-secondary">View Bills</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 OZON DETAILING</p>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+
+    <script>
+        // ✅ CORRECT FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZDRip0dEEFPC4h_FjG9_tJiZNcbK0fMo",
+            authDomain: "cms-66a2b.firebaseapp.com",
+            projectId: "cms-66a2b",
+            databaseURL: "https://cms-66a2b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            storageBucket: "cms-66a2b.appspot.com",
+            messagingSenderId: "628054355189",
+            appId: "1:628054355189:web:4a977980fac4a1959829bc"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // References to your data in Firebase
+        const billsRef = database.ref('bills');
+        const stockRef = database.ref('stock');
+        const expensesRef = database.ref('expenses');
+        // In a real app with auth, you would get the user's name from Firebase Auth
+        // For now, we will use a placeholder.
+
+        function showMessage(type, message) {
+            const area = document.getElementById('message-area');
+            if (!area) return;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+            messageDiv.textContent = message;
+            area.appendChild(messageDiv);
+            setTimeout(() => { messageDiv.remove(); }, 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Mock Login & Welcome Message ---
+            const mockUser = 'admin'; 
+            document.getElementById('logged-in-user').textContent = mockUser;
+            document.getElementById('welcome-user-name').textContent = mockUser;
+            
+            // --- Real-time Dashboard Stats ---
+            const totalBillsStat = document.getElementById('total-bills-stat');
+            const stockItemsStat = document.getElementById('stock-items-stat');
+            const totalExpensesStat = document.getElementById('total-expenses-stat');
+
+            // Listen for changes in bills data
+            billsRef.on('value', (snapshot) => {
+                const billsData = snapshot.val();
+                const count = billsData ? Object.keys(billsData).length : 0;
+                if (totalBillsStat) totalBillsStat.textContent = count;
+            });
+
+            // Listen for changes in stock data
+            stockRef.on('value', (snapshot) => {
+                const stockData = snapshot.val();
+                const count = stockData ? Object.keys(stockData).length : 0;
+                if (stockItemsStat) stockItemsStat.textContent = count;
+            });
+
+            // Listen for changes in expenses data
+            expensesRef.on('value', (snapshot) => {
+                const expensesData = snapshot.val();
+                let totalAmount = 0;
+                if (expensesData) {
+                    Object.values(expensesData).forEach(expense => {
+                        totalAmount += parseFloat(expense.amount) || 0;
+                    });
+                }
+                if (totalExpensesStat) totalExpensesStat.textContent = `₹${totalAmount.toFixed(2)}`;
+            });
+
+            // Display welcome/success messages from other pages
+            const urlParams = new URLSearchParams(window.location.search);
+            const msgType = urlParams.get('msgType');
+            const msgText = urlParams.get('msg');
+            if (msgType && msgText) {
+                showMessage(msgType, decodeURIComponent(msgText));
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+</body>
+</html>

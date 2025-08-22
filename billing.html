@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Create Bill - OZON DETAILING</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <link rel="icon" href="images/transport.png">
+    <style>
+        /* YOUR ORIGINAL CSS - WITH RESPONSIVE FIXES */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; color: #333; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: #2c3e50; color: white; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        header h1 a { color: white; text-decoration: none; font-size: 1.8rem; }
+        .menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        nav { width: 100%; }
+        nav ul { list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        nav ul li a { color: white; text-decoration: none; font-size: 1rem; padding: 0.5rem 1rem; border-radius: 4px; transition: background-color 0.3s; }
+        nav ul li a:hover { background-color: #34495e; }
+        nav ul li a.active { background-color: #3498db; }
+        #logout-link { color: #e74c3c; }
+        #logout-link:hover { background-color: #c0392b; }
+        main { flex: 1; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .form-container { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; }
+        h2#billing-page-title { font-size: 2rem; margin-bottom: 1rem; color: #2c3e50; }
+        #edit-mode-indicator.hidden { display: none; }
+        .message { padding: 1rem; border-radius: 4px; margin-bottom: 0.5rem; font-size: 1rem; }
+        .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        form#billing-form { display: flex; flex-direction: column; gap: 1rem; }
+        .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 200px; margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #2c3e50; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+        .form-group input.invalid { border-color: #e74c3c; }
+        .item-row { display: flex; align-items: flex-end; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; padding: 1rem; border-radius: 4px; background: #f9fafb; }
+        .item-row-col1 { flex: 3; min-width: 200px; }
+        .item-row-col2 { flex: 1; min-width: 80px; max-width: 120px; }
+        .item-row-col3 { flex: 1; min-width: 100px; max-width: 140px; }
+        .item-row-col4 { margin-left: auto; padding-bottom: 0.5rem; }
+        .stock-error-msg { color: #e74c3c; font-size: 0.8rem; margin-top: 0.3rem; }
+        .total-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #eee; text-align: right; }
+        .total-section strong { font-size: 1.25rem; color: #2c3e50; }
+        .final-actions { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+        .button { display: inline-block; padding: 0.5rem 1rem; color: white; text-decoration: none; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer; }
+        .button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        .button-secondary { background-color: #7f8c8d; }
+        .button-small { padding: 0.4rem 0.8rem; }
+        #add-item-btn { background-color: #2ecc71; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 8px; padding: 1.5rem; width: 90%; max-width: 600px; }
+        .modal-close { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1.2rem; cursor: pointer; }
+        footer { text-align: center; padding: 1rem; background-color: #2c3e50; color: white; margin-top: auto; }
+        
+        @media (max-width: 768px) {
+            header { padding: 1rem; }
+            header h1 { width: 100%; text-align: center; margin-bottom: 1rem; }
+            .menu-toggle { display: block; position: absolute; top: 1.25rem; right: 1rem; }
+            nav { width: 100%; }
+            nav ul { display: none; flex-direction: column; align-items: stretch; width: 100%; gap: 0; }
+            nav ul.nav-active { display: flex; }
+            nav ul li { width: 100%; }
+            nav ul li a { display: block; text-align: center; padding: 1rem; border-radius: 0; border-top: 1px solid #34495e;}
+            .form-row, .item-row { flex-direction: column; }
+            .item-row-col1, .item-row-col2, .item-row-col3 { max-width: 100%; }
+            .final-actions { flex-direction: column; }
+            .final-actions button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="dashboard.html">OZON DETAILING</a></h1>
+        <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
+        <nav id="main-nav">
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="billing.html" class="active">Billing</a></li>
+                <li><a href="stock.html">Stock</a></li>
+                <li><a href="salary.html">Salaries</a></li>
+                <li><a href="expenses.html">Expenses</a></li>
+                <li><a href="view_bills.html">View Bills</a></li>
+                <li><a href="login.html" id="logout-link">Logout (<span id="logged-in-user"></span>)</a></li>
+                <li><a href="productwarranty.html">productwarranty</a></li>
+              <li><a href="warrantypackage.html">warrantypackag</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="form-container">
+            <h2 id="billing-page-title">Create New Bill / Invoice</h2>
+            <div id="edit-mode-indicator" class="hidden">EDITING BILL</div>
+            <div id="message-area"></div>
+            <div id="stock-error-area"></div>
+            <form id="billing-form">
+                <input type="hidden" id="editing-bill-id">
+                <div class="form-row">
+                    <div class="form-group"><label>Customer Name *:</label><input type="text" id="customer_name" required list="customer-names-datalist"></div>
+                    <div class="form-group"><label>Mobile Number:</label><input type="tel" id="customer_mobile"></div>
+                    <div class="form-group"><label>Bill Date *:</label><input type="date" id="bill_date" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Car Name / Model *:</label><input type="text" id="car_name" required></div>
+                    <div class="form-group"><label>Number Plate *:</label><input type="text" id="number_plate" required></div>
+                </div>
+                <div class="form-group"><label>Service Details / Notes:</label><textarea id="service_details"></textarea></div>
+                <div class="form-group"><label>Labour Cost (₹):</label><input type="number" id="labour_cost" min="0" value="0"></div>
+                <hr style="margin: 1rem 0;">
+                <h3>Items Sold / Used</h3>
+                <div id="items-list" class="items-section"></div>
+                <button type="button" id="add-item-btn" class="button button-small"><i class="fas fa-plus"></i> Add Item</button>
+                <datalist id="stock-items-datalist"></datalist>
+                <datalist id="customer-names-datalist"></datalist>
+                <hr style="margin: 1rem 0;">
+                <div class="form-row">
+                    <div class="form-group"><label>Mode of Payment *:</label><select id="payment_mode" required><option value="">-- Select --</option><option value="Cash">Cash</option><option value="Online">Online</option><option value="Credit">Credit/Due</option><option value="Cash and Online">Cash and Online</option></select></div>
+                    <div class="form-group"><label>Cash Paid (₹):</label><input type="number" id="cash_paid" min="0" value="0"></div>
+                    <div class="form-group" id="online-paid-group" style="display: none;"><label>Online Paid (₹):</label><input type="number" id="online_paid" min="0" value="0"></div>
+                </div>
+                <div class="total-section">
+                    Labour: ₹ <span id="display_labour_cost">0.00</span> <br>
+                    Items Subtotal: ₹ <span id="items_subtotal">0.00</span> <br>
+                    <strong>Total Amount: ₹ <span id="total_amount">0.00</span></strong>
+                </div>
+                <div class="final-actions">
+                    <button type="submit" id="generate-bill-btn" class="button"><i class="fas fa-save"></i> Generate & Save Bill</button>
+                    <button type="button" id="generate-pdf-btn" class="button button-secondary"><i class="fas fa-file-pdf"></i> Generate PDF View</button>
+                    <button type="reset" class="button button-secondary"><i class="fas fa-times"></i> Clear Form</button>
+                </div>
+            </form>
+        </div>
+        <div id="pdf-preview-modal" class="modal">
+             <div class="modal-content">
+                <span class="modal-close" onclick="closeModal('pdf-preview-modal')">&times;</span>
+                <h3>PDF Preview & Options</h3>
+                <div id="pdf-preview-content"></div>
+                <form id="pdf-options-form" onsubmit="return false;">
+                    <div class="form-group"><label>Workshop Name:</label><input type="text" id="workshop-name" value="OZON DETAILING & CAR WASH"></div>
+                    <div class="form-group"><label>Address Line 1:</label><input type="text" id="workshop-address" value="kolathakkara, manipuram"></div>
+                    <div class="form-group"><label>Address Line 2:</label><input type="text" id="workshop-address2" value="Puthoor (po) , omassery 673582"></div>
+                    <div class="form-group"><label>Phone:</label><input type="tel" id="workshop-phone" value="+91-9447405746,+91-9846135714"></div>
+                    <div class="form-group"><label>Email:</label><input type="email" id="workshop-email" value="ozondetailingkolathakkara@gmail.com"></div>
+                    <div class="form-group"><label>Additional Notes:</label><textarea id="pdf-notes"></textarea></div>
+                </form>
+                <div class="final-actions">
+                    <button type="button" id="download-pdf-btn" class="button"><i class="fas fa-download"></i> Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer><p>© 2025 OZON DETAILING</p></footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZDRip0dEEFPC4h_FjG9_tJiZNcbK0fMo",
+            authDomain: "cms-66a2b.firebaseapp.com",
+            projectId: "cms-66a2b",
+            databaseURL: "https://cms-66a2b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            storageBucket: "cms-66a2b.appspot.com",
+            messagingSenderId: "628054355189",
+            appId: "1:628054355189:web:4a977980fac4a1959829bc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const stockRef = database.ref('stock');
+        const billsRef = database.ref('bills');
+        const customersRef = database.ref('customers');
+
+        let currentStockData = {};
+        let currentCustomersData = {};
+        let originalBillItems = [];
+
+        function showMessage(type, message) {
+            const area = document.getElementById('message-area');
+            if(area) area.innerHTML = `<div class="message message-${type}">${message}</div>`;
+        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('logged-in-user').textContent = 'admin';
+            document.getElementById('menu-toggle').onclick = () => document.querySelector('#main-nav ul').classList.toggle('nav-active');
+
+            const billingForm = document.getElementById('billing-form');
+            const itemsListDiv = document.getElementById('items-list');
+            const addItemBtn = document.getElementById('add-item-btn');
+            const stockDatalist = document.getElementById('stock-items-datalist');
+            const customerDatalist = document.getElementById('customer-names-datalist');
+            const customerNameInput = document.getElementById('customer_name');
+            const labourCostInput = document.getElementById('labour_cost');
+            const paymentModeSelect = document.getElementById('payment_mode');
+            const onlinePaidGroup = document.getElementById('online-paid-group');
+            const saveBillBtn = document.getElementById('generate-bill-btn');
+            const editingBillIdInput = document.getElementById('editing-bill-id');
+            const pdfBtn = document.getElementById('generate-pdf-btn');
+            
+            stockRef.on('value', snapshot => {
+                currentStockData = snapshot.val() || {};
+                stockDatalist.innerHTML = '';
+                Object.entries(currentStockData).forEach(([code, item]) => {
+                    const option = document.createElement('option');
+                    option.value = `${item.name} (${code}) - Avail: ${item.quantity}`;
+                    option.dataset.price = item.price;
+                    option.dataset.code = code;
+                    option.dataset.name = item.name;
+                    stockDatalist.appendChild(option);
+                });
+                validateStockLevels();
+            });
+
+            customersRef.on('value', snapshot => {
+                currentCustomersData = snapshot.val() || {};
+                customerDatalist.innerHTML = '';
+                Object.keys(currentCustomersData).forEach(name => {
+                    customerDatalist.innerHTML += `<option value="${name}"></option>`;
+                });
+            });
+
+            customerNameInput.addEventListener('input', () => {
+                const customer = currentCustomersData[customerNameInput.value.trim()];
+                if (customer) {
+                    document.getElementById('customer_mobile').value = customer.mobile || '';
+                    document.getElementById('car_name').value = customer.lastKnownCarName || '';
+                    document.getElementById('number_plate').value = customer.lastKnownNumberPlate || '';
+                }
+            });
+            
+            function addBillItemRow(item = {}) {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.innerHTML = `
+                    <div class="item-row-col1 form-group"><label>Item *:</label><input type="text" class="item-name-input" list="stock-items-datalist" value="${item.name || ''}" required><input type="hidden" class="item-code-hidden" value="${item.code || ''}"><div class="stock-error-msg"></div></div>
+                    <div class="item-row-col2 form-group"><label>Qty *:</label><input type="number" class="item-quantity-input" min="1" value="${item.quantity || 1}" required></div>
+                    <div class="item-row-col3 form-group"><label>Unit Price (₹) *:</label><input type="number" class="item-price-input" step="0.01" min="0" value="${item.price || ''}" required></div>
+                    <div class="item-row-col4"><button type="button" class="remove-item-btn button button-danger button-small"><i class="fas fa-trash"></i></button></div>`;
+                itemsListDiv.appendChild(row);
+
+                const nameInput = row.querySelector('.item-name-input');
+                nameInput.addEventListener('change', () => {
+                    const option = Array.from(stockDatalist.options).find(opt => opt.value === nameInput.value);
+                    if (option) {
+                        row.querySelector('.item-price-input').value = option.dataset.price;
+                        row.querySelector('.item-code-hidden').value = option.dataset.code;
+                        nameInput.dataset.cleanName = option.dataset.name;
+                    } else {
+                        row.querySelector('.item-code-hidden').value = '';
+                        nameInput.dataset.cleanName = nameInput.value.trim();
+                    }
+                    calculateTotals();
+                });
+                
+                row.querySelector('.remove-item-btn').onclick = () => { row.remove(); calculateTotals(); };
+                [row.querySelector('.item-quantity-input'), row.querySelector('.item-price-input'), labourCostInput].forEach(input => {
+                    input.addEventListener('input', calculateTotals);
+                });
+            }
+
+            function calculateTotals() {
+                let itemsTotal = 0;
+                itemsListDiv.querySelectorAll('.item-row').forEach(row => {
+                    itemsTotal += (parseInt(row.querySelector('.item-quantity-input').value) || 0) * (parseFloat(row.querySelector('.item-price-input').value) || 0);
+                });
+                const labourCost = parseFloat(labourCostInput.value) || 0;
+                const totalAmount = labourCost + itemsTotal;
+                document.getElementById('display_labour_cost').textContent = labourCost.toFixed(2);
+                document.getElementById('items_subtotal').textContent = itemsTotal.toFixed(2);
+                document.getElementById('total_amount').textContent = totalAmount.toFixed(2);
+                validateStockLevels();
+            }
+            
+            function validateStockLevels() {
+                let isValid = true;
+                document.getElementById('stock-error-area').innerHTML = '';
+                itemsListDiv.querySelectorAll('.item-row').forEach(row => {
+                    const code = row.querySelector('.item-code-hidden').value;
+                    const needed = parseInt(row.querySelector('.item-quantity-input').value) || 0;
+                    const errorDiv = row.querySelector('.stock-error-msg');
+                    errorDiv.textContent = '';
+                    if (code && currentStockData[code]) {
+                        let available = currentStockData[code].quantity;
+                        if (editingBillIdInput.value) {
+                            const origItem = originalBillItems.find(i => i.code === code);
+                            if (origItem) available += origItem.quantity;
+                        }
+                        if (available < needed) {
+                            errorDiv.textContent = `Insufficient stock! Available: ${available}`;
+                            isValid = false;
+                        }
+                    }
+                });
+                saveBillBtn.disabled = !isValid;
+                if(!isValid) document.getElementById('stock-error-area').innerHTML = '<div class="message message-error">Cannot save bill, resolve stock issues.</div>';
+                return isValid;
+            }
+
+            addItemBtn.onclick = () => addBillItemRow();
+            paymentModeSelect.addEventListener('change', () => {
+                onlinePaidGroup.style.display = ['Online', 'Cash and Online'].includes(paymentModeSelect.value) ? 'block' : 'none';
+            });
+            
+            billingForm.addEventListener('submit', e => {
+                e.preventDefault();
+                if (!validateStockLevels()) return;
+
+                const billId = editingBillIdInput.value || `BILL-${Date.now()}`;
+                const billData = {
+                    billId, customerName: customerNameInput.value.trim(),
+                    customerMobile: document.getElementById('customer_mobile').value.trim(),
+                    billDate: document.getElementById('bill_date').value,
+                    carName: document.getElementById('car_name').value.trim(),
+                    numberPlate: document.getElementById('number_plate').value.trim().toUpperCase(),
+                    serviceDetails: document.getElementById('service_details').value.trim(),
+                    labourCost: parseFloat(labourCostInput.value) || 0,
+                    paymentMode: paymentModeSelect.value,
+                    cashPaid: parseFloat(document.getElementById('cash_paid').value || 0),
+                    onlinePaid: parseFloat(document.getElementById('online_paid').value || 0),
+                    totalAmount: parseFloat(document.getElementById('total_amount').textContent),
+                    items: Array.from(itemsListDiv.querySelectorAll('.item-row')).map(row => ({
+                        name: row.querySelector('.item-name-input').dataset.cleanName || row.querySelector('.item-name-input').value.trim(),
+                        code: row.querySelector('.item-code-hidden').value,
+                        quantity: parseInt(row.querySelector('.item-quantity-input').value),
+                        price: parseFloat(row.querySelector('.item-price-input').value)
+                    }))
+                };
+
+                stockRef.transaction(stock => {
+                    if (!stock) return;
+                    if (editingBillIdInput.value) {
+                        originalBillItems.forEach(item => { if(item.code && stock[item.code]) stock[item.code].quantity += item.quantity; });
+                    }
+                    for(const item of billData.items) {
+                        if (item.code && stock[item.code]) {
+                            if (stock[item.code].quantity < item.quantity) return; // Abort
+                            stock[item.code].quantity -= item.quantity;
+                        }
+                    }
+                    return stock;
+                }, (error, committed) => {
+                    if (committed) {
+                        billsRef.child(billId).set(billData);
+                        if (billData.customerName) {
+                            customersRef.child(billData.customerName).update({
+                                mobile: billData.customerMobile,
+                                lastKnownCarName: billData.carName,
+                                lastKnownNumberPlate: billData.numberPlate
+                            });
+                        }
+                        const successMsg = encodeURIComponent(`Bill ${billId} saved!`);
+                        window.location.href = `view_bills.html?msgType=success&msg=${successMsg}`;
+                    } else {
+                        showMessage('error', 'Stock update failed. Please try again.');
+                    }
+                });
+            });
+
+            pdfBtn.addEventListener('click', () => { /* Add your PDF generation logic here */ alert("PDF feature coming soon!"); });
+            
+            const editId = new URLSearchParams(window.location.search).get('editId');
+            if (editId) {
+                editingBillIdInput.value = editId;
+                document.getElementById('billing-page-title').textContent = `Edit Bill ${editId}`;
+                billsRef.child(editId).once('value', snapshot => {
+                    const bill = snapshot.val();
+                    if(!bill) return;
+                    originalBillItems = bill.items || [];
+                    customerNameInput.value = bill.customerName;
+                    document.getElementById('customer_mobile').value = bill.customerMobile;
+                    document.getElementById('bill_date').value = bill.billDate;
+                    document.getElementById('car_name').value = bill.carName;
+                    document.getElementById('number_plate').value = bill.numberPlate;
+                    document.getElementById('service_details').value = bill.serviceDetails;
+                    labourCostInput.value = bill.labourCost;
+                    paymentModeSelect.value = bill.paymentMode;
+                    document.getElementById('cash_paid').value = bill.cashPaid;
+                    document.getElementById('online_paid').value = bill.onlinePaid;
+                    paymentModeSelect.dispatchEvent(new Event('change'));
+                    itemsListDiv.innerHTML = '';
+                    (bill.items || []).forEach(addBillItemRow);
+                    calculateTotals();
+                });
+            } else {
+                addBillItemRow();
+                document.getElementById('bill_date').valueAsDate = new Date();
+            }
+        });
+    </script>
+</body>
+</html>
